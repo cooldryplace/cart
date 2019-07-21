@@ -100,6 +100,7 @@ func (c *Carts) Create(ctx context.Context, userID int64) (Cart, error) {
 	return cart, nil
 }
 
+// Delete Cart by ID.
 func (c *Carts) Delete(ctx context.Context, cartID int64) error {
 	if err := c.storage.DeleteCart(ctx, cartID); err != nil {
 		log.Printf("Failed to delete the Cart with ID: %d, error: %s", cartID, err)
@@ -109,6 +110,7 @@ func (c *Carts) Delete(ctx context.Context, cartID int64) error {
 	return nil
 }
 
+// Empty Cart removes all previously added items.
 func (c *Carts) Empty(ctx context.Context, cartID int64) error {
 	if err := c.storage.DeleteLineItems(ctx, cartID); err != nil {
 		log.Printf("Failed to empty the Cart with ID: %d, error: %s", cartID, err)
