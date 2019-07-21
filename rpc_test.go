@@ -10,6 +10,41 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestToProtoLineItems(t *testing.T) {
+	cases := []struct {
+		name     string
+		input    LineItem
+		expected *proto.LineItem
+	}{
+		{
+			name:     "Zero values",
+			input:    LineItem{},
+			expected: &proto.LineItem{},
+		},
+		{
+			name: "All values",
+			input: LineItem{
+				ProductID: 100500,
+				Quantity:  1,
+			},
+			expected: &proto.LineItem{
+				ProductId: 100500,
+				Quantity:  1,
+			},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := toProtoLineItem(c.input)
+
+			if diff := cmp.Diff(c.expected, actual); diff != "" {
+				t.Errorf("toProtoLineItem() mismatch (+got -want)\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestToProtoCart(t *testing.T) {
 	var (
 		lineItem       = LineItem{ProductID: 13, Quantity: 100}
@@ -28,7 +63,7 @@ func TestToProtoCart(t *testing.T) {
 		expectedError error
 	}{
 		{
-			name:  "Empty values",
+			name:  "Zero values",
 			input: Cart{},
 			expected: &proto.Cart{
 				Items:     []*proto.LineItem{},
