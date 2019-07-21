@@ -131,7 +131,7 @@ func main() {
 	case err := <-errChan:
 		log.Println(err)
 	case <-signalChan:
-		log.Println("Interrupt recieved. Graceful shutdown.")
+		log.Println("Interrupt received. Graceful shutdown.")
 	}
 
 	grpcServer.GracefulStop()
