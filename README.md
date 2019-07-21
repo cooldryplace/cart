@@ -4,6 +4,9 @@ Cart
 
 [©Roberto Badillo](https://www.flickr.com/photos/rmb808)
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/cooldryplace/cart)](https://goreportcard.com/report/github.com/cooldryplace/cart)
+[![GoDoc](https://godoc.org/github.com/cooldryplace/cart?status.svg)](https://godoc.org/github.com/cooldryplace/cart)
+
 ## Why
 Hey, people want to buy products.
 
