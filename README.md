@@ -25,6 +25,7 @@ An example would be:
 * user
 * billing
 * auth
+
 Not:
 * controller
 * service
