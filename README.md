@@ -33,6 +33,17 @@ Not:
 
 [@rakyll Style guideline for Go packages](https://rakyll.org/style-packages/)
 
+### Other microservices
+Carts rely on other microservices.
+* AuthZ: to check that the caller is allowed to access/modify Cart state.
+* Billing: to get prices.
+* Business Analytics: to submit Cart updates details and make conclusions.
+* Products: to get product details.
+
+Some microservices rely on Cart.
+* Orders: to retrieve Cart state.
+* Users: to retrieve Cart(s) for User profile.
+
 ### Testing
 To run all tests: `go test github.com/cooldryplace/cart/...`.
 To skip integration tests: `go test --short github.com/cooldryplace/cart/...`.
