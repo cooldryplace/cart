@@ -160,3 +160,34 @@ func TestCartCreate(t *testing.T) {
 		t.Error("Expected new Cart to be empty")
 	}
 }
+
+func TestCreatedCartCanBeDeleted(t *testing.T) {
+	var (
+		ctx          = context.Background()
+		userID int64 = 42
+	)
+
+	resp, err := cartsClient.CreateCart(ctx, &proto.CartCreateRequest{UserId: userID})
+	if err != nil {
+		t.Fatalf("Failed to create a Cart: %s", err)
+	}
+
+	cartID := resp.Cart.Id
+
+	_, err = cartsClient.DeleteCart(ctx, &proto.CartDeleteRequest{Id: cartID})
+	if err != nil {
+		t.Fatalf("Failed to delete the Cart: %s", err)
+	}
+
+	_, err = cartsClient.GetCart(ctx, &proto.CartRequest{Id: cartID})
+	if err == nil {
+		t.Fatal("Expected to get error")
+	}
+
+	actual := status.Code(err)
+	expected := codes.NotFound
+
+	if actual != expected {
+		t.Errorf("Got status: %v, expected: %v", actual, expected)
+	}
+}
