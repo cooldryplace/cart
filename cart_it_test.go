@@ -134,4 +134,8 @@ func TestCartCreate(t *testing.T) {
 	if actual.UserId != userID {
 		t.Errorf("Got user ID: %d, expected: %d", actual.UserId, userID)
 	}
+
+	if len(actual.Items) != 0 {
+		t.Error("Expected new Cart to be empty")
+	}
 }
