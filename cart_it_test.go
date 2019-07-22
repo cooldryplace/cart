@@ -119,6 +119,76 @@ func cartByID(ctx context.Context, t *testing.T, cartID int64) *proto.Cart {
 	return resp.Cart
 }
 
+func addProduct(ctx context.Context, t *testing.T, cartID, prodID int64, qtty uint32) {
+	t.Helper()
+
+	_, err := cartsClient.AddProduct(ctx,
+		&proto.AddProductRequest{
+			CartId:    cartID,
+			ProductId: prodID,
+			Quantity:  qtty,
+		})
+	if err != nil {
+		t.Fatalf("Failed to add product to a Cart: %s", err)
+	}
+}
+
+func TestProductCanBeAdded(t *testing.T) {
+	var (
+		ctx                   = context.Background()
+		userID         int64  = 10
+		firstProdID    int64  = 2
+		firstProdQtty  uint32 = 1
+		secondProdID   int64  = 3
+		secondProdQtty uint32 = 2
+	)
+
+	resp, err := cartsClient.CreateCart(ctx, &proto.CartCreateRequest{UserId: userID})
+	if err != nil {
+		t.Fatalf("Failed to create a Cart: %s", err)
+	}
+	defer cartsClient.DeleteCart(ctx, &proto.CartDeleteRequest{Id: resp.Cart.Id})
+
+	cartID := resp.Cart.Id
+
+	addProduct(ctx, t, cartID, firstProdID, firstProdQtty)
+
+	cart := cartByID(ctx, t, cartID)
+
+	if cart.UserId != userID {
+		t.Errorf("Got user ID: %d, expected: %d", cart.UserId, userID)
+	}
+
+	if len(cart.Items) != 1 {
+		t.Error("Expected Cart to have one LineItem")
+	}
+
+	firstItem := cart.Items[0]
+
+	if firstItem.ProductId != firstProdID {
+		t.Errorf("Got first product ID: %d, expected: %d", firstItem.ProductId, firstProdID)
+	}
+	if firstItem.Quantity != firstProdQtty {
+		t.Errorf("Got first product quantity: %d, expected: %d", firstItem.Quantity, firstProdQtty)
+	}
+
+	addProduct(ctx, t, cartID, secondProdID, secondProdQtty)
+
+	cart = cartByID(ctx, t, cartID)
+	if len(cart.Items) != 2 {
+		t.Error("Expected Cart to have two LineItems")
+	}
+
+	secondItem := cart.Items[1]
+
+	if secondItem.ProductId != secondProdID {
+		t.Errorf("Got second product ID: %d, expected: %d", secondItem.ProductId, secondProdID)
+	}
+	if secondItem.Quantity != secondProdQtty {
+		t.Errorf("Got second product quantity: %d, expected: %d", secondItem.Quantity, secondProdQtty)
+	}
+}
+
 func TestUnknownCartReturnsNotFound(t *testing.T) {
 	var (
 		ctx                 = context.Background()
