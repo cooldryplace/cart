@@ -1,3 +1,4 @@
+// package cart provides shopping cart functionality.
 package cart
 
 import (
