@@ -15,7 +15,9 @@ import (
 
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/status"
 )
 
 var cartsClient proto.CartsClient
@@ -115,6 +117,25 @@ func cartByID(ctx context.Context, t *testing.T, cartID int64) *proto.Cart {
 	}
 
 	return resp.Cart
+}
+
+func TestUnknownCartReturnsNotFound(t *testing.T) {
+	var (
+		ctx                 = context.Background()
+		unknownCartID int64 = 4444444
+	)
+
+	_, err := cartsClient.GetCart(ctx, &proto.CartRequest{Id: unknownCartID})
+	if err == nil {
+		t.Fatal("Expected to get error")
+	}
+
+	actual := status.Code(err)
+	expected := codes.NotFound
+
+	if actual != expected {
+		t.Errorf("Got status: %v, expected: %v", actual, expected)
+	}
 }
 
 func TestCartCreate(t *testing.T) {
