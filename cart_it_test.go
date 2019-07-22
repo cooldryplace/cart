@@ -169,7 +169,7 @@ func TestEmpty(t *testing.T) {
 	cart := cartByID(ctx, t, cartID)
 
 	if len(cart.Items) == 0 {
-		t.Fatalf("Product was not added")
+		t.Fatal("Product was not added")
 	}
 
 	if _, err := cartsClient.EmptyCart(ctx, &proto.EmptyCartRequest{CartId: cartID}); err != nil {
@@ -179,7 +179,7 @@ func TestEmpty(t *testing.T) {
 	cart = cartByID(ctx, t, cartID)
 
 	if len(cart.Items) != 0 {
-		t.Fatalf("Cart was not cleared")
+		t.Fatal("Cart was not cleared")
 	}
 }
 
