@@ -133,6 +133,62 @@ func addProduct(ctx context.Context, t *testing.T, cartID, prodID int64, qtty ui
 	}
 }
 
+func createCart(ctx context.Context, t *testing.T, userID int64) int64 {
+	t.Helper()
+
+	resp, err := cartsClient.CreateCart(ctx, &proto.CartCreateRequest{UserId: userID})
+	if err != nil {
+		t.Fatalf("Failed to create a Cart: %s", err)
+	}
+
+	return resp.Cart.Id
+}
+
+func deleteCart(ctx context.Context, t *testing.T, cartID int64) {
+	t.Helper()
+
+	_, err := cartsClient.DeleteCart(ctx, &proto.CartDeleteRequest{Id: cartID})
+	if err != nil {
+		t.Fatalf("Failed to delete the Cart: %s", err)
+	}
+}
+
+func TestQuantityUpdated(t *testing.T) {
+	var (
+		ctx           = context.Background()
+		userID int64  = 9
+		prodID int64  = 100
+		qtty1  uint32 = 1
+		qtty2  uint32 = 9
+	)
+
+	cartID := createCart(ctx, t, userID)
+	defer deleteCart(ctx, t, cartID)
+
+	addProduct(ctx, t, cartID, prodID, qtty1)
+
+	cart := cartByID(ctx, t, cartID)
+	item := cart.Items[0]
+
+	if item.ProductId != prodID {
+		t.Errorf("Got product ID: %d, expected: %d", item.ProductId, prodID)
+	}
+	if item.Quantity != qtty1 {
+		t.Errorf("Got quantity: %d, expected: %d", item.Quantity, qtty1)
+	}
+
+	addProduct(ctx, t, cartID, prodID, qtty2)
+
+	cart = cartByID(ctx, t, cartID)
+	item = cart.Items[0]
+
+	expectedQtty := qtty1 + qtty2
+
+	if item.Quantity != expectedQtty {
+		t.Errorf("Got quantity: %d, expected: %d", item.Quantity, expectedQtty)
+	}
+}
+
 func TestProductCanBeAdded(t *testing.T) {
 	var (
 		ctx                   = context.Background()
@@ -143,13 +199,8 @@ func TestProductCanBeAdded(t *testing.T) {
 		secondProdQtty uint32 = 2
 	)
 
-	resp, err := cartsClient.CreateCart(ctx, &proto.CartCreateRequest{UserId: userID})
-	if err != nil {
-		t.Fatalf("Failed to create a Cart: %s", err)
-	}
-	defer cartsClient.DeleteCart(ctx, &proto.CartDeleteRequest{Id: resp.Cart.Id})
-
-	cartID := resp.Cart.Id
+	cartID := createCart(ctx, t, userID)
+	defer deleteCart(ctx, t, cartID)
 
 	addProduct(ctx, t, cartID, firstProdID, firstProdQtty)
 
