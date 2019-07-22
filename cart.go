@@ -1,4 +1,4 @@
-// package cart provides shopping cart functionality.
+// Package cart provides shopping cart functionality. It exposes gRPC API and uses SQL DB as storage.
 package cart
 
 import (
