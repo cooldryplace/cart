@@ -33,6 +33,10 @@ Not:
 
 [@rakyll Style guideline for Go packages](https://rakyll.org/style-packages/)
 
+### Testing
+To run all tests: `go test github.com/cooldryplace/cart/...`.
+To skip integration tests: `go test --short github.com/cooldryplace/cart/...`.
+
 ### Metrics
 Currently, only API and client metrics are implemented. This already allows measuring availability and latency. In the future, I can add more specific metrics that will not be used in SLO implementations but will be in dashboards. To pinpoint the root cause of a problem during incidents.
 So we alert based on SLIs, look at the dashboard, and know where and why it happens.
