@@ -8,7 +8,7 @@ Cart
 [![GoDoc](https://godoc.org/github.com/cooldryplace/cart?status.svg)](https://godoc.org/github.com/cooldryplace/cart)
 
 * [gRPC sources](https://github.com/cooldryplace/proto-sources)
-* [generated gRPC code](://github.com/cooldryplace/proto)
+* [generated gRPC code](https://github.com/cooldryplace/proto)
 * [TLS certificates](https://github.com/cooldryplace/certs)
 
 ## Why
