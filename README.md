@@ -7,6 +7,10 @@ Cart
 [![Go Report Card](https://goreportcard.com/badge/github.com/cooldryplace/cart)](https://goreportcard.com/report/github.com/cooldryplace/cart)
 [![GoDoc](https://godoc.org/github.com/cooldryplace/cart?status.svg)](https://godoc.org/github.com/cooldryplace/cart)
 
+* [gRPC sources](https://github.com/cooldryplace/proto-sources)
+* [generated gRPC code](://github.com/cooldryplace/proto)
+* [TLS certificates](https://github.com/cooldryplace/certs)
+
 ## Why
 Hey, people want to buy products.
 
@@ -50,6 +54,7 @@ Some microservices rely on Cart.
 
 ### Testing
 To run all tests: `go test github.com/cooldryplace/cart/...`.
+
 To skip integration tests: `go test --short github.com/cooldryplace/cart/...`.
 
 #### Missing Parts
