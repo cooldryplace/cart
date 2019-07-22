@@ -153,6 +153,44 @@ func deleteCart(ctx context.Context, t *testing.T, cartID int64) {
 	}
 }
 
+func TestDeleteLineItem(t *testing.T) {
+	var (
+		ctx            = context.Background()
+		userID  int64  = 7
+		prodID1 int64  = 97
+		prodID2 int64  = 98
+		qtty    uint32 = 1
+	)
+
+	cartID := createCart(ctx, t, userID)
+	defer deleteCart(ctx, t, cartID)
+
+	addProduct(ctx, t, cartID, prodID1, qtty)
+	addProduct(ctx, t, cartID, prodID2, qtty)
+
+	cart := cartByID(ctx, t, cartID)
+
+	if len(cart.Items) != 2 {
+		t.Fatal("Products were not added")
+	}
+
+	if _, err := cartsClient.DelProduct(ctx, &proto.DelProductRequest{CartId: cartID, ProductId: prodID1}); err != nil {
+		t.Fatalf("Failed to delete a Product: %s", err)
+	}
+
+	cart = cartByID(ctx, t, cartID)
+
+	if len(cart.Items) != 1 {
+		t.Fatal("LineItem was not deleted")
+	}
+
+	item := cart.Items[0]
+
+	if item.ProductId != prodID2 {
+		t.Errorf("Got product ID: %d, expected: %d", item.ProductId, prodID1)
+	}
+}
+
 func TestEmpty(t *testing.T) {
 	var (
 		ctx           = context.Background()
@@ -221,18 +259,18 @@ func TestQuantityUpdated(t *testing.T) {
 
 func TestProductCanBeAdded(t *testing.T) {
 	var (
-		ctx                   = context.Background()
-		userID         int64  = 10
-		firstProdID    int64  = 2
-		firstProdQtty  uint32 = 1
-		secondProdID   int64  = 3
-		secondProdQtty uint32 = 2
+		ctx              = context.Background()
+		userID    int64  = 10
+		prodID1   int64  = 2
+		prodQtty1 uint32 = 1
+		prodID2   int64  = 3
+		prodQtty2 uint32 = 2
 	)
 
 	cartID := createCart(ctx, t, userID)
 	defer deleteCart(ctx, t, cartID)
 
-	addProduct(ctx, t, cartID, firstProdID, firstProdQtty)
+	addProduct(ctx, t, cartID, prodID1, prodQtty1)
 
 	cart := cartByID(ctx, t, cartID)
 
@@ -246,14 +284,14 @@ func TestProductCanBeAdded(t *testing.T) {
 
 	firstItem := cart.Items[0]
 
-	if firstItem.ProductId != firstProdID {
-		t.Errorf("Got first product ID: %d, expected: %d", firstItem.ProductId, firstProdID)
+	if firstItem.ProductId != prodID1 {
+		t.Errorf("Got first product ID: %d, expected: %d", firstItem.ProductId, prodID1)
 	}
-	if firstItem.Quantity != firstProdQtty {
-		t.Errorf("Got first product quantity: %d, expected: %d", firstItem.Quantity, firstProdQtty)
+	if firstItem.Quantity != prodQtty1 {
+		t.Errorf("Got first product quantity: %d, expected: %d", firstItem.Quantity, prodQtty1)
 	}
 
-	addProduct(ctx, t, cartID, secondProdID, secondProdQtty)
+	addProduct(ctx, t, cartID, prodID2, prodQtty2)
 
 	cart = cartByID(ctx, t, cartID)
 	if len(cart.Items) != 2 {
@@ -262,11 +300,11 @@ func TestProductCanBeAdded(t *testing.T) {
 
 	secondItem := cart.Items[1]
 
-	if secondItem.ProductId != secondProdID {
-		t.Errorf("Got second product ID: %d, expected: %d", secondItem.ProductId, secondProdID)
+	if secondItem.ProductId != prodID2 {
+		t.Errorf("Got second product ID: %d, expected: %d", secondItem.ProductId, prodID2)
 	}
-	if secondItem.Quantity != secondProdQtty {
-		t.Errorf("Got second product quantity: %d, expected: %d", secondItem.Quantity, secondProdQtty)
+	if secondItem.Quantity != prodQtty2 {
+		t.Errorf("Got second product quantity: %d, expected: %d", secondItem.Quantity, prodQtty2)
 	}
 }
 
