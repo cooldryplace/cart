@@ -153,6 +153,36 @@ func deleteCart(ctx context.Context, t *testing.T, cartID int64) {
 	}
 }
 
+func TestEmpty(t *testing.T) {
+	var (
+		ctx           = context.Background()
+		userID int64  = 8
+		prodID int64  = 99
+		qtty   uint32 = 1
+	)
+
+	cartID := createCart(ctx, t, userID)
+	defer deleteCart(ctx, t, cartID)
+
+	addProduct(ctx, t, cartID, prodID, qtty)
+
+	cart := cartByID(ctx, t, cartID)
+
+	if len(cart.Items) == 0 {
+		t.Fatalf("Product was not added")
+	}
+
+	if _, err := cartsClient.EmptyCart(ctx, &proto.EmptyCartRequest{CartId: cartID}); err != nil {
+		t.Fatalf("Failed to empty a Cart: %s", err)
+	}
+
+	cart = cartByID(ctx, t, cartID)
+
+	if len(cart.Items) != 0 {
+		t.Fatalf("Cart was not cleared")
+	}
+}
+
 func TestQuantityUpdated(t *testing.T) {
 	var (
 		ctx           = context.Background()
